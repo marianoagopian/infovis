@@ -47,3 +47,27 @@ plt.xticks()
 # Mostrar el gráfico
 plt.tight_layout()
 plt.show()
+
+# Convertir la duración de las canciones de segundos a minutos
+data['duration_min'] = data['duration'] / 60
+
+# Agrupar los datos por género y sumar la duración en minutos por cada género
+minutes_per_genre = data.groupby('genre')['duration_min'].sum().reset_index()
+
+# Generar un gráfico de torta (pie chart)
+plt.figure(figsize=(10,6))  # Aumentar el tamaño para dar espacio a la leyenda
+plt.pie(minutes_per_genre['duration_min'], startangle=90, colors=plt.cm.Paired.colors)
+
+# Añadir la leyenda fuera del gráfico, a la derecha
+plt.legend(minutes_per_genre['genre'], title="Género", loc="center left", bbox_to_anchor=(1, 0.5))
+
+# Asegurar que el gráfico sea un círculo
+plt.axis('equal')
+
+# Título
+plt.title('Distribución de minutos escuchados por género')
+
+# Mostrar el gráfico
+plt.tight_layout()
+plt.show()
+
