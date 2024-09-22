@@ -54,20 +54,38 @@ data['duration_min'] = data['duration'] / 60
 # Agrupar los datos por género y sumar la duración en minutos por cada género
 minutes_per_genre = data.groupby('genre')['duration_min'].sum().reset_index()
 
-# Generar un gráfico de torta (pie chart)
-plt.figure(figsize=(10,6))  # Aumentar el tamaño para dar espacio a la leyenda
-plt.pie(minutes_per_genre['duration_min'], startangle=90, colors=plt.cm.Paired.colors)
+# Calcular el total de minutos escuchados
+total_minutes = minutes_per_genre['duration_min'].sum()
 
-# Añadir la leyenda fuera del gráfico, a la derecha
-plt.legend(minutes_per_genre['genre'], title="Género", loc="center left", bbox_to_anchor=(1, 0.5))
+# Convertir el total de minutos en horas y minutos
+total_hours = int(total_minutes // 60)
+remaining_minutes = int(total_minutes % 60)
+
+# Generar una lista de colores únicos utilizando el cmap 'hsv' que tiene una amplia gama de colores
+colors = plt.cm.get_cmap('hsv', len(minutes_per_genre))
+
+# Generar el gráfico de torta (pie chart) sin porcentajes en el gráfico
+plt.figure(figsize=(10,6))
+
+# Crear el gráfico de torta con colores únicos
+plt.pie(minutes_per_genre['duration_min'], 
+        startangle=90, 
+        colors=[colors(i) for i in range(len(minutes_per_genre))], 
+        wedgeprops=dict(edgecolor='w'))  # Asegurar que los colores no se repitan
+
+# Crear las etiquetas de la leyenda que incluyen el porcentaje y el total de minutos
+labels = [f"{genre}: {minutes:.1f} min ({minutes/total_minutes:.1%})" 
+          for genre, minutes in zip(minutes_per_genre['genre'], minutes_per_genre['duration_min'])]
+
+# Añadir la leyenda fuera del gráfico, a la derecha, con porcentaje y totales
+plt.legend(labels, title="Género", loc="center left", bbox_to_anchor=(1, 0.5))
 
 # Asegurar que el gráfico sea un círculo
 plt.axis('equal')
 
-# Título
-plt.title('Distribución de minutos escuchados por género')
+# Título con el total de horas y minutos
+plt.title(f'Distribución de minutos escuchados por género (Total: {total_hours}h {remaining_minutes}min)')
 
 # Mostrar el gráfico
 plt.tight_layout()
 plt.show()
-
